@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <title>Artist List</title>
+        <style>
+        body, h1, h2, h3, h4, p {
+            font-family: 'Helvetica', sans-serif;
+        }
+        
+    </style>
+  </head>
+<body class="bg-gray-100 p-4 flex flex-col justify-between min-h-screen">
+
+
+  <div class="text-center mb-4">
+    <h1 class="text-2xl font-bold">Please Select the Artists You Like</h1>
+  </div>
+
+  <form method="post" action="">
+    {% csrf_token %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2" id="artistGrid">
+      {% for artist in artists %}
+      <div class="bg-white py-4 px-8 rounded-md shadow-md flex flex-col items-center ">
+        <img src="{{ artist.artist_image_url }}" alt="{{ artist.artist_name }}" class="w-24 h-24 object-cover rounded-full">
+        <h2 class="text-sm font-semibold mb-2">{{ artist.artist_name }}</h2>
+        <input type="checkbox" name="selected_artists" value="{{ artist.artist_id }}" class="mb-2">
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex justify-center items-end mt-4">
+      <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md">Submit</button>
+    </div>
+  </form>
+
+
+  <div class="flex justify-center items-end mt-4">
+    <button id="loadMoreBtn" class="bg-blue-500 text-white py-2 px-4 rounded-md mr-2">Load More</button>
+  </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var page = 2; // Initial page for "Load More" button
+        var loadMoreBtn = document.getElementById("loadMoreBtn");
+        var artistGrid = document.getElementById("artistGrid");
+        var selectedCheckboxes = [];
+
+        // Function to handle checkbox state
+        function updateCheckboxState() {
+          var checkboxes = document.getElementsByName("selected_artists");
+          checkboxes.forEach(function (checkbox) {
+            checkbox.checked = selectedCheckboxes.includes(checkbox.value);
+          });
+        }
+
+        // Function to fetch and append more artists
+        function loadMoreArtists() {
+          fetch("?page=" + page)
+            .then((response) => response.text())
+            .then((data) => {
+              var temp = document.createElement("div");
+              temp.innerHTML = data;
+              var newArtists = temp.querySelector(".grid");
+
+              // Append new artists to the existing grid
+              artistGrid.innerHTML += newArtists.innerHTML;
+
+              // Restore checkbox state
+              updateCheckboxState();
+
+              page++;
+            });
+        }
+
+        // Event listener for "Load More" button
+        if (loadMoreBtn) {
+          loadMoreBtn.addEventListener("click", function () {
+            // Save the state of selected checkboxes
+            var checkboxes = document.getElementsByName("selected_artists");
+            selectedCheckboxes = Array.from(checkboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => checkbox.value);
+
+            // Load more artists
+            loadMoreArtists();
+          });
+        }
+
+        // Event listener for checkbox change
+        var checkboxes = document.getElementsByName("selected_artists");
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener("change", function () {
+            // Update the state of selected checkboxes array
+            if (checkbox.checked) {
+              selectedCheckboxes.push(checkbox.value);
+            } else {
+              selectedCheckboxes = selectedCheckboxes.filter(
+                (value) => value !== checkbox.value
+              );
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <title>Artist List</title>
+  </head>
+  <body class="bg-gray-100 p-4 flex flex-col justify-between min-h-screen">
+    <div>
+      <form method="post" action="">
+        {% csrf_token %}
+
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4"
+          id="artistGrid"
+        >
+          {% for artist in artists %}
+          <div
+            class="bg-white p-4 rounded-md shadow-md flex flex-col items-center"
+          >
+            <input
+              type="checkbox"
+              name="selected_artists"
+              value="{{ artist.artist_id }}"
+              class="mb-2"
+            />
+            <h2 class="text-lg font-semibold mb-2">{{ artist.artist_name }}</h2>
+            <img
+              src="{{ artist.artist_image_url }}"
+              alt="{{ artist.artist_name }}"
+              class="w-32 h-32 object-cover rounded-full"
+            />
+          </div>
+          {% endfor %}
+        </div>
+        <div class="flex justify-center items-end mb-4">
+          <button
+            type="submit"
+            class="bg-green-500 text-white py-2 px-4 rounded-md"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+      <div class="flex justify-center items-end mb-4">
+        <button
+          id="loadMoreBtn"
+          class="bg-blue-500 text-white py-2 px-4 rounded-md mr-2"
+        >
+          Load More
+        </button>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var page = 2; // Initial page for "Load More" button
+        var loadMoreBtn = document.getElementById("loadMoreBtn");
+        var artistGrid = document.getElementById("artistGrid");
+        var selectedCheckboxes = [];
+
+        // Function to handle checkbox state
+        function updateCheckboxState() {
+          var checkboxes = document.getElementsByName("selected_artists");
+          checkboxes.forEach(function (checkbox) {
+            checkbox.checked = selectedCheckboxes.includes(checkbox.value);
+          });
+        }
+
+        // Function to fetch and append more artists
+        function loadMoreArtists() {
+          fetch("?page=" + page)
+            .then((response) => response.text())
+            .then((data) => {
+              var temp = document.createElement("div");
+              temp.innerHTML = data;
+              var newArtists = temp.querySelector(".grid");
+
+              // Append new artists to the existing grid
+              artistGrid.innerHTML += newArtists.innerHTML;
+
+              // Restore checkbox state
+              updateCheckboxState();
+
+              page++;
+            });
+        }
+
+        // Event listener for "Load More" button
+        if (loadMoreBtn) {
+          loadMoreBtn.addEventListener("click", function () {
+            // Save the state of selected checkboxes
+            var checkboxes = document.getElementsByName("selected_artists");
+            selectedCheckboxes = Array.from(checkboxes)
+              .filter((checkbox) => checkbox.checked)
+              .map((checkbox) => checkbox.value);
+
+            // Load more artists
+            loadMoreArtists();
+          });
+        }
+
+        // Event listener for checkbox change
+        var checkboxes = document.getElementsByName("selected_artists");
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener("change", function () {
+            // Update the state of selected checkboxes array
+            if (checkbox.checked) {
+              selectedCheckboxes.push(checkbox.value);
+            } else {
+              selectedCheckboxes = selectedCheckboxes.filter(
+                (value) => value !== checkbox.value
+              );
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html> -->

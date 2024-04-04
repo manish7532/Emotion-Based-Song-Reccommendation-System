@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Capture Image</title>
+    <!-- Include Tailwind CSS via CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center h-screen">
+    <div class="text-center">
+        {% if message %}
+            <div class="bg-red-500 text-white p-2 mb-2 rounded">
+                <p>{{ message }}</p>
+            </div>
+        {% endif %}
+        <h1 class="text-2xl font-bold mb-4">Capture an Image from Webcam</h1>
+        <video id="video" width="640" height="480" autoplay></video>
+        <button id="captureButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none">Capture Image</button>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const captureButton = document.getElementById('captureButton');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+            })
+            .catch(err => console.error('Error accessing webcam:', err));
+
+        captureButton.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const capturedImage = canvas.toDataURL('image/png');
+
+            // Create a hidden input field to hold the image data
+            const imageInput = document.createElement('input');
+            imageInput.type = 'hidden';
+            imageInput.name = 'image';
+            imageInput.value = capturedImage;
+            document.body.appendChild(imageInput);
+
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.enctype = 'multipart/form-data';
+            form.action = '{% url "emotion_detection:capture_image" %}';  // Replace with the actual URL
+            form.appendChild(imageInput);
+            document.body.appendChild(form);
+            form.submit();
+
+            // Clean up after submitting the form
+            canvas.remove();
+            imageInput.remove();
+            form.remove();
+        });
+    </script>
+</body>
+</html>

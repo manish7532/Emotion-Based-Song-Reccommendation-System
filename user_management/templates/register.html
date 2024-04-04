@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" >
+    <title>Signup</title>
+    <style>
+        body, h1, h2, h3, h4, p {
+            font-family: 'Helvetica', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="bg-white p-8 mb-6 shadow-md">
+        <h1 class="text-4xl font-extrabold text-center text-indigo-600">Emotion Based Song Recommendation System</h1>
+    </div>
+    <div class="flex flex-col items-center justify-center">
+        <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+            <h1 class="text-4xl font-extrabold mb-6 text-center text-indigo-600">SignUp</h1>
+            {% if form.errors %}
+                <div class="bg-red-500 text-white p-2 mb-2 rounded">
+                    {% if form.errors.username %}
+                        <p>{{ form.errors.username }}</p>
+                    {% endif %}
+                    {% if form.errors.password1 %}
+                        <p>{{ form.errors.password1 }}</p>
+                    {% endif %}
+                    {% if form.errors.password2 %}
+                        <p>{{ form.errors.password2 }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+                <div>
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                </div>
+                <div>
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline-indigo active:bg-indigo-800">Signup</button>
+                <p class="text-gray-600 text-center">
+                    Already have an account? <a href="{% url 'login' %}" class="text-indigo-600">Login</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" >
+    <title>Signup</title>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+        <h1 class="text-4xl font-extrabold mb-6 text-center text-indigo-600">SignUp</h1>
+        {% if form.errors %}
+            <div class="bg-red-500 text-white p-2 mb-2 rounded">
+                {% if form.errors.username %}
+                    <p>{{ form.errors.username }}</p>
+                {% endif %}
+                {% if form.errors.password1 %}
+                    <p>{{ form.errors.password1 }}</p>
+                {% endif %}
+                {% if form.errors.password2 %}
+                    <p>{{ form.errors.password2 }}</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                {{ form.username.label_tag }}
+                {{ form.username }}
+            </div>
+            <div>
+                {{ form.password1.label_tag }}
+                {{ form.password1 }}
+            </div>
+            <div>
+                {{ form.password2.label_tag }}
+                {{ form.password2 }}
+            </div>
+            <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700 focus:outline-none focus:shadow-outline-indigo active:bg-indigo-800">Signup</button>
+            <p class="text-gray-600 text-center">
+                Already have an account? <a href="{% url 'login' %}" class="text-indigo-600">Login</a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>
+ -->
